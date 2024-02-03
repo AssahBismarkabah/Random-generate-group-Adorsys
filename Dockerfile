@@ -11,7 +11,7 @@ COPY . /app
 
 #install in the container any package specified in the requirement.txt
 
-RUN pip install --no-cache-dir -r requirement.txt
+RUN pip install -r  requirement.txt
 
 #Make port 80 avalaible to the world outside the container 
 
