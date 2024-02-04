@@ -1,9 +1,9 @@
-name: Build and Deliver Docker Package to the github registory 
+name: Build and Deliver Docker Package
 
 on:
   push:
     branches:
-      - main
+      - main  # Change this to your main branch
 
 env:
   REGISTRY: ghcr.io
@@ -34,6 +34,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -41,7 +47,5 @@ jobs:
           platforms: linux/arm/v6,linux/arm/v7,linux/amd64,linux/arm64
           file: ./Dockerfile
           push: true
-          tags: latest
-
-      - name: Push Docker image to GitHub Container Registry
-        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
